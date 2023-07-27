@@ -206,7 +206,7 @@
 	  
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-		  Save
+		  update profile
 		</button>
 	  </div>
 
