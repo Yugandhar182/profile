@@ -3,6 +3,7 @@
 	import 'flowbite/dist/flowbite.css';
 	import { Select } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
+	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 
 		let name='';
 		let address='';
@@ -14,7 +15,8 @@
 		let currencyOptions = [];
 	    let selectedTimezone;
         let reactiveTimezoneOptions = [];
-		let selectedCurrency = '';
+		let selectedCountry=null;
+		let isValid = false;
 		
 
 
@@ -144,9 +146,18 @@
 		<Input type="text" id="address"  bind:value={address} required />
 	  </div>
 	  <div class="mb-6">
-		<Label for="phone" class="mb-2">Phone</Label>
-		<Input type="tel" id="phone" placeholder="Phone" bind:value={phone} required />
-	  </div>
+		<label for="phone">Phone</label>
+        <select
+          class="country-select {!isValid && 'invalid'}" aria-label="Default select example" name="Country" bind:value={selectedCountry} >
+          <option value={null} hidden={selectedCountry !== null}>Please select</option>
+          {#each normalizedCountries as country (country.id)}
+            <option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
+              {country.iso2} (+{country.dialCode})
+            </option>
+          {/each}
+        </select>
+       <TelInput  country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'}" />
+      </div>
 	  <div class="mb-6">
 		<Label for="website" class="mb-2">Website</Label>
 		<Input type="url" id="website" bind:value={website} required />
