@@ -1,9 +1,10 @@
 <script>
 	import { Input, Label } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
-	import { Select } from 'flowbite-svelte';
+	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
+	
 
 		let name='';
 		let address='';
@@ -146,48 +147,63 @@
 		<Input type="text" id="address"  bind:value={address} required />
 	  </div>
 	  <div class="mb-6">
-		<label for="phone">Phone</label>
-        <select
-          class="country-select {!isValid && 'invalid'}" aria-label="Default select example" name="Country" bind:value={selectedCountry} >
-          <option value={null} hidden={selectedCountry !== null}>Please select</option>
-          {#each normalizedCountries as country (country.id)}
-            <option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
-              {country.iso2} (+{country.dialCode})
-            </option>
-          {/each}
-        </select>
-       <TelInput  country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'}" />
-      </div>
+		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white">Phone</label>
+		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		  <select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
+			<option value={null} hidden={selectedCountry !== null}>Please select</option>
+			{#each normalizedCountries as country (country.id)}
+			  <option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
+				{country.iso2} (+{country.dialCode})
+			  </option>
+			{/each}
+		  </select>
+		 
+		</div>
+		<TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} mt-2 block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
+	  </div>
+	  
 	  <div class="mb-6">
 		<Label for="website" class="mb-2">Website</Label>
 		<Input type="url" id="website" bind:value={website} required />
 	  </div>
 	  <div class="mb-6">
-		<label for="currency" class="form-label">Currency:</label>
-    <select class="form-select" id="currency" bind:value={currencyCode} required>
-    {#each currencyOptions as currency}
-    <option value={currency.value}>{currency.label}</option>
-    {/each}
-    </select>
-	  </div>
-	  <div class="mb-6">
-		<label for="date_format" class="mb-2">Preferred Date Format</label>
-		<select id="preferredDateFormat" bind:value={preferredDateFormat} required>
-		  <option value="pretty" selected>Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
-		  <option value="dateOnly">Date only (e.g., 12/31/2020)</option>
-		  <option value="dateTime">Date and Time (e.g., 12/31/2020 15:00:00)</option>
-		  <option value="dateTime12h">Date and Time (e.g., 12/31/2020 03:00PM)</option>
-		</select>
+		<label for="currency" class="block text-sm font-medium text-gray-700 dark:text-white">Currency:</label>
+		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		  <select id="currency" bind:value={currencyCode} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+			{#each currencyOptions as currency}
+			<option value={currency.value}>{currency.label}</option>
+			{/each}
+		  </select>
+		
+		</div>
 	  </div>
 	  
 	  <div class="mb-6">
-		<label for="timezone" class="form-label">Timezone</label>
-        <select class="form-select" id="timezone" bind:value={selectedTimezone} required>
-       {#each reactiveTimezoneOptions as timezone (timezone.id)}
-       <option value={timezone.code}>{timezone.name}</option>
-       {/each}
-	   </select>
+		<label for="preferredDateFormat" class="block text-sm font-medium text-gray-700 dark:text-white">Preferred Date Format</label>
+		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		  <select id="preferredDateFormat" bind:value={preferredDateFormat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+			<option value="pretty" selected>Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
+			<option value="dateOnly">Date only (e.g., 12/31/2020)</option>
+			<option value="dateTime">Date and Time (e.g., 12/31/2020 15:00:00)</option>
+			<option value="dateTime12h">Date and Time (e.g., 12/31/2020 03:00PM)</option>
+		  </select>
+		
+		</div>
 	  </div>
+	  
+	  
+	  <div class="mb-6">
+		<label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-white">Timezone</label>
+		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		  <select id="timezone" bind:value={selectedTimezone} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+			{#each reactiveTimezoneOptions as timezone }
+			<option value={timezone.code}>{timezone.name}</option>
+			{/each}
+		  </select>
+		  
+		</div>
+	  </div>
+	  
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 		  Save
@@ -200,13 +216,14 @@
   <style>
 	.form-container {
 	  margin-left: 550px;
-	  width: 400px;
-	 height: 400PX;
-	  margin-bottom:190px;
+	  width: 500px;
+	 height: 200PX;
+	  margin-top:-310px;
 	}
 	.container{
 	 
 	  width:600px;
 	
+	 
 	}
   </style>
