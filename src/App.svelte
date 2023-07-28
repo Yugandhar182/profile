@@ -41,7 +41,15 @@
 		// Populate the form fields with the fetched data
 		id = data.id;
 		name = data.name;
-		address = data.address.cityName;
+		address = {
+      addressLine: data.address.addressLine,
+      cityName: data.address.cityName,
+      regionName: data.address.regionName,
+      postCode: data.address.postCode,
+      countryCode: data.address.countryCode,
+      latitude: data.address.latitude,
+      longitude: data.address.longitude,
+    };
 		phone = data.phone;
 		website = data.website;
 		currencyCode = data.currencyCode.code;
@@ -58,27 +66,31 @@
 	onMount(() => {
 	  fetchData();
 	});
-	
 	async function saveFormData() {
-	  const Update = {
-		id,
-		name,
-		
-		address: {
-       cityName: address.cityName,
-      },
-	
-		phone,
-		website,
-		currencyCode: {
-		  code: currencyCode,
-		},
-		preferredDateformat,
-		timeZone,
-		preferredCountries: preferredCountries,
-		preferredCountryCode,
-	  };
-	  console.log(JSON.stringify(Update));
+  const Update = {
+    id,
+    name,
+	address : {
+      addressLine: address.addressLine,
+      cityName: address.cityName,
+      regionName:address.regionName,
+      postCode:address.postCode,
+      countryCode:address.countryCode,
+      latitude:address.latitude,
+      longitude:address.longitude,
+    },
+    phone,
+    website,
+    currencyCode: {
+      code: currencyCode,
+    },
+    preferredDateformat,
+    timeZone,
+    preferredCountries: preferredCountries,
+    preferredCountryCode,
+  };
+
+  console.log("Update data:", JSON.stringify(Update));
 	  
 	  // Send the updated data to the API here
 	  try {
@@ -91,10 +103,40 @@
 		});
 		const updatedData = await response.json();
 		console.log("Updated data from API:", updatedData);
+		resetForm();
 	  } catch (error) {
 		console.error("Error updating data:", error);
 	  }
 	}
+
+
+
+	function resetForm() {
+				
+				id = "";
+				name = "";
+				address = {
+					addressLine: "",
+					cityName: "",
+					regionName: "",
+					postCode: "",
+					countryCode: "IN",
+					latitude: "",
+					longitude: "",
+				};
+				phone = "";
+				website = "";
+				currencyCode = "";
+				preferredDateformat = "";
+				timeZone = "";
+				preferredCountryCode = "";
+				preferredCountries = [];
+				selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
+				selectedCountry = null;
+				}
+
+
+
 
   onMount(async () => {
     try {
@@ -164,11 +206,11 @@
 	  </div>
 	  <div class="mb-6">
 		<Label for="address" class="mb-2">Address</Label>
-		<Input type="text" id="address"  bind:value={address} required />
+		<Input type="text" id="address"  bind:value={address.cityName} required />
 	  </div>
 	
 	  <div class="mb-6 flex flex-wrap">
-  <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">phone</label>
+  <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
   <div class="w-1/3 pr-1">
     <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
       <select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
