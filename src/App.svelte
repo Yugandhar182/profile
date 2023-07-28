@@ -4,7 +4,7 @@
 	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
-	
+
 
 		let name='';
 		let address='';
@@ -18,6 +18,7 @@
         let reactiveTimezoneOptions = [];
 		let selectedCountry=null;
 		let isValid = false;
+		let dataFetched = false;
 		
 
 
@@ -35,6 +36,8 @@
       currencyCode = data.currencyCode.name;
      
       timeZone = data.timeZone;
+	  dataFetched = true;
+
     } catch (error) {
       console.error('Error fetching default values:', error);
     }
@@ -95,37 +98,38 @@
 
 
 				 async function saveFormData() {
-    try {
-      const response = await fetch('https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          address,
-          phone,
-          website,
-          currencyCode,
-          preferredDateFormat,
-          timeZone,
-        }),
-      });
+                    try {
+                 const response = await fetch('https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					name: name,
+        address: address,
+        phone: phone,
+        website: website,
+        currencyCode: currencyCode,
+        preferredDateFormat: preferredDateFormat,
+        timeZone: timeZone,
+				}),
+				});
 
-      if (!response.ok) {
-        console.error('Failed to save form data:', response);
-        return;
-      }
-
-      console.log('Form data saved successfully!');
-    } catch (error) {
-      console.error('Error saving form data:', error);
+    if (!response.ok) {
+      console.error('Failed to save form data:', response);
+      return;
     }
+
+    console.log('Form data saved successfully!');
+  } catch (error) {
+    console.error('Error saving form data:', error);
   }
+}
 
 
   </script>
 
+{#if dataFetched}
   <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
@@ -146,21 +150,30 @@
 		<Label for="address" class="mb-2">Address</Label>
 		<Input type="text" id="address"  bind:value={address} required />
 	  </div>
-	  <div class="mb-6">
-		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white">Phone</label>
-		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-		  <select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
-			<option value={null} hidden={selectedCountry !== null}>Please select</option>
-			{#each normalizedCountries as country (country.id)}
-			  <option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
-				{country.iso2} (+{country.dialCode})
-			  </option>
-			{/each}
-		  </select>
-		 
-		</div>
-		<TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} mt-2 block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
-	  </div>
+	
+	  <div class="mb-6 flex flex-wrap">
+  <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
+  <div class="w-1/3 pr-1">
+    <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+      <select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
+        <option value={null} hidden={selectedCountry !== null}>Please select</option>
+        {#each normalizedCountries as country (country.id)}
+          <option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
+            {country.iso2} (+{country.dialCode})
+          </option>
+        {/each}
+      </select>
+      
+    </div>
+  </div>
+  <div class="w-2/3 pl-1">
+    <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+      <TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
+    </div>
+  </div>
+</div>
+
+
 	  
 	  <div class="mb-6">
 		<Label for="website" class="mb-2">Website</Label>
@@ -190,6 +203,7 @@
 		
 		</div>
 	  </div>
+	
 	  
 	  
 	  <div class="mb-6">
@@ -212,6 +226,8 @@
 
   </form>
 </main>
+{/if}
+
   
   <style>
 	.form-container {
