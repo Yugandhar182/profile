@@ -28,6 +28,7 @@
 	    let selectedTimezone;
         let reactiveTimezoneOptions = [];
 		let selectedCountry=null;
+		let imageUrl = null;
 		let isValid = false;
 		 
 
@@ -184,6 +185,56 @@
 
 
 
+				 async function fetchImage() {
+	  const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
+	  const apiUrl = `https://api.recruitly.io/api/business/profile?apiKey=${apiKey}`;
+  
+	  try {
+		const response = await fetch(apiUrl);
+		const data = await response.json();
+		// Access the imageUrl from the appLogo object
+		imageUrl = data.logo.url;
+	  } catch (error) {
+		console.error("Error fetching image:", error);
+	  }
+	}
+  
+	// Function to handle the logo click and trigger image upload
+	function handleLogoClick() {
+	  const inputElement = document.createElement("input");
+	  inputElement.type = "file";
+	  inputElement.accept = "image/*";
+	  inputElement.addEventListener("change", uploadImage);
+	  inputElement.click();
+	}
+  
+	// Function to handle image upload
+	async function uploadImage(event) {
+	  const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
+	  const uploadUrl = `https://api.recruitly.io/api/image/upload?apiKey=${apiKey}`;
+	  const formData = new FormData();
+	  formData.append("file", event.target.files[0]);
+	  formData.append("profilePic", "true");
+	  formData.append("type", "TENANT");
+  
+	  try {
+		const response = await fetch(uploadUrl, {
+		  method: "POST",
+		  headers: {
+			Cookie: "SESSION=NDU1ZDRjNmUtNDg1ZC00NjVhLWJhNmItN2NlZmE4NzYxMWRm",
+		  },
+		  body: formData,
+		});
+		const data = await response.json();
+		// The uploaded image URL should be available in 'data.url'
+		imageUrl = data.url;
+	  } catch (error) {
+		console.error("Error uploading image:", error);
+	  }
+	}
+  
+	// Call the fetchImage function to retrieve the image URL when the component is mounted
+	fetchImage();
 
   </script>
 
@@ -198,7 +249,7 @@
 	</div>
 	<div class="mb-6">
 	  <Label for="company_logo" class="mb-2">Company Logo</Label>
-	  <img src=https://s3-eu-west-1.amazonaws.com/recruitly-public/334fbbc8-6ab1-49d1-bede-5ead2a0b1a56/8abcc976-bf3d-438e-9485-e82be62db9fb.png />
+	  <img src="{imageUrl}" alt="Logo" on:click={handleLogoClick} style="cursor: pointer;" />
 	</div>
 	<div class="mb-6">
 		<Label for="company_name" class="mb-2">Company Name</Label>
