@@ -6,51 +6,95 @@
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 
 
-		let name='';
-		let address='';
-		let phone='';
-		let website='';
-		let currencyCode='';
-		let preferredDateFormat='';
-		let timeZone='';
+		let id = "";
+		let name = "";
+		let address = {
+		addressLine: "",
+		cityName: "",
+		regionName: "",
+		postCode: "",
+		countryCode: "IN",
+		latitude: "",
+		longitude: "",
+	   };
+		let phone = "";
+		let website = "";
+		let currencyCode = "";
+		let preferredDateformat = "";
+		let timeZone = "";
+		let preferredCountryCode = "";
+		let preferredCountries = [];
 		let currencyOptions = [];
 	    let selectedTimezone;
         let reactiveTimezoneOptions = [];
 		let selectedCountry=null;
 		let isValid = false;
-		let dataFetched = false;
+		 
+
 		
-
-
-	async function fetchDefaultValues() {
-    try {
-      const response = await fetch('https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77');
-      const data = await response.json();
-
-      // Update form fields with the retrieved data
-	  console.log(data);
-      name = data.name;
-      address = data.address.cityName;
-      phone = data.phone;
-      website = data.website;
-      currencyCode = data.currencyCode.name;
-     
-      timeZone = data.timeZone;
-	  dataFetched = true;
-
-    } catch (error) {
-      console.error('Error fetching default values:', error);
-    }
-  }
-
-  // Call the fetchDefaultValues function when the component is mounted
-  onMount(fetchDefaultValues);
-
-
- 
-  
-
- 
+	const fetchData = async () => {
+	  try {
+		const response = await fetch("https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77");
+		const data = await response.json();
+		console.log(data, "data");
+		
+		// Populate the form fields with the fetched data
+		id = data.id;
+		name = data.name;
+		address = data.address.cityName;
+		phone = data.phone;
+		website = data.website;
+		currencyCode = data.currencyCode.code;
+		preferredDateformat = data.preferredDateFormat;
+		timeZone = data.timeZone;
+		preferredCountryCode = data.preferredCountryCode;
+		preferredCountries = [data.preferredCountries];
+	  } catch (error) {
+		console.error("Error fetching data:", error);
+	  }
+	};
+	
+	// Fetch data on component mount
+	onMount(() => {
+	  fetchData();
+	});
+	
+	async function saveFormData() {
+	  const Update = {
+		id,
+		name,
+		
+		address: {
+       cityName: address.cityName,
+      },
+	
+		phone,
+		website,
+		currencyCode: {
+		  code: currencyCode,
+		},
+		preferredDateformat,
+		timeZone,
+		preferredCountries: preferredCountries,
+		preferredCountryCode,
+	  };
+	  console.log(JSON.stringify(Update));
+	  
+	  // Send the updated data to the API here
+	  try {
+		const response = await fetch('https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
+		  method: "POST",
+		  headers: {
+			"Content-Type": "application/json",
+		  },
+		  body: JSON.stringify(Update),
+		});
+		const updatedData = await response.json();
+		console.log("Updated data from API:", updatedData);
+	  } catch (error) {
+		console.error("Error updating data:", error);
+	  }
+	}
 
   onMount(async () => {
     try {
@@ -97,39 +141,11 @@
 				 });
 
 
-				 async function saveFormData() {
-                    try {
-                 const response = await fetch('https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					name: name,
-        address: address,
-        phone: phone,
-        website: website,
-        currencyCode: currencyCode,
-        preferredDateFormat: preferredDateFormat,
-        timeZone: timeZone,
-				}),
-				});
-
-    if (!response.ok) {
-      console.error('Failed to save form data:', response);
-      return;
-    }
-
-    console.log('Form data saved successfully!');
-  } catch (error) {
-    console.error('Error saving form data:', error);
-  }
-}
 
 
   </script>
 
-{#if dataFetched}
+
   <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
@@ -152,7 +168,7 @@
 	  </div>
 	
 	  <div class="mb-6 flex flex-wrap">
-  <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
+  <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">phone</label>
   <div class="w-1/3 pr-1">
     <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
       <select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
@@ -194,7 +210,7 @@
 	  <div class="mb-6">
 		<label for="preferredDateFormat" class="block text-sm font-medium text-gray-700 dark:text-white">Preferred Date Format</label>
 		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-		  <select id="preferredDateFormat" bind:value={preferredDateFormat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+		  <select id="preferredDateFormat" bind:value={preferredDateformat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
 			<option value="pretty" selected>Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
 			<option value="dateOnly">Date only (e.g., 12/31/2020)</option>
 			<option value="dateTime">Date and Time (e.g., 12/31/2020 15:00:00)</option>
@@ -209,7 +225,7 @@
 	  <div class="mb-6">
 		<label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-white">Timezone</label>
 		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-		  <select id="timezone" bind:value={selectedTimezone} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+		  <select id="timezone" bind:value={timeZone} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
 			{#each reactiveTimezoneOptions as timezone }
 			<option value={timezone.code}>{timezone.name}</option>
 			{/each}
@@ -226,7 +242,7 @@
 
   </form>
 </main>
-{/if}
+
 
   
   <style>
