@@ -13,7 +13,7 @@
 		cityName: "",
 		regionName: "",
 		postCode: "",
-		countryCode: "IN",
+		countryCode: "",
 		latitude: "",
 		longitude: "",
 	   };
@@ -51,6 +51,7 @@
       latitude: data.address.latitude,
       longitude: data.address.longitude,
     };
+	    selectedCountry = data.address.countryCode; 
 		phone = data.phone;
 		website = data.website;
 		currencyCode = data.currencyCode.code;
@@ -236,6 +237,8 @@
 	// Call the fetchImage function to retrieve the image URL when the component is mounted
 	fetchImage();
 
+
+
   </script>
 
 
@@ -250,7 +253,9 @@
 	<div class="mb-6">
 	  <Label for="company_logo" class="mb-2">Company Logo</Label>
 	  <img src="{imageUrl}" alt="Logo" on:click={handleLogoClick} style="cursor: pointer;" />
+	
 	</div>
+	
 	<div class="mb-6">
 		<Label for="company_name" class="mb-2">Company Name</Label>
 		<Input type="text" id="name" bind:value={name} required />
@@ -263,28 +268,27 @@
 	  </div>
 	
 	  <div class="mb-6 flex flex-wrap">
-  <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
-  <div class="w-1/3 pr-1">
-    <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-      <select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
-        <option value={null} hidden={selectedCountry !== null}>Please select</option>
-        {#each normalizedCountries as country (country.id)}
-          <option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
-            {country.iso2} (+{country.dialCode})
-          </option>
-        {/each}
-      </select>
-      
-    </div>
-  </div>
-  <div class="w-2/3 pl-1">
-    <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-      <TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
-    </div>
-	
-  </div>
-</div>
-
+		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
+		<div class="w-1/3 pr-1">
+		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+			<select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
+			  <option value={null} hidden={selectedCountry !== null}>Please select</option>
+			  {#each normalizedCountries as country (country.id)}
+				<option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
+				  {country.iso2} (+{country.dialCode})
+				</option>
+			  {/each}
+			</select>
+			
+		  </div>
+		</div>
+		<div class="w-2/3 pl-1">
+		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+			<TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
+		  </div>
+		</div>
+	  </div>
+	  
 
 	  
 	  <div class="mb-6">
@@ -308,7 +312,7 @@
 		<label for="preferredDateFormat" class="block text-sm font-medium text-gray-700 dark:text-white">Preferred Date Format</label>
 		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
 		  <select id="preferredDateFormat" bind:value={	preferredDateformat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
-			<option >Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
+			<option  selected >Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
 			<option >Date only (e.g., 12/31/2020)</option>
 			<option >Date and Time (e.g., 12/31/2020 15:00:00)</option>
 			<option >Date and Time (e.g., 12/31/2020 03:00PM)</option>
