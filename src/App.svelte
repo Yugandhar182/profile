@@ -2,9 +2,8 @@
 	import { Input, Label } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
 	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
-	import { onMount } from 'svelte';
+	import { onMount } from 'svelte';	
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
-
 
 		let id = "";
 		let name = "";
@@ -17,7 +16,7 @@
 		latitude: "",
 		longitude: "",
 	   };
-		let phone = "";
+	   let phone='';
 		let website = "";
 		let currencyCode = "";
 		let preferredDateformat = "";
@@ -30,6 +29,7 @@
 		let selectedCountry=null;
 		let imageUrl = null;
 		let isValid = false;
+		let dataFetched = false;
 		 
 
 		
@@ -37,8 +37,8 @@
 	  try {
 		const response = await fetch("https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77");
 		const data = await response.json();
-		console.log(data, "data");
-		
+		console.log(data);
+	
 		// Populate the form fields with the fetched data
 		id = data.id;
 		name = data.name;
@@ -53,12 +53,14 @@
     };
 	    selectedCountry = data.address.countryCode; 
 		phone = data.phone;
+		console.log(phone);
 		website = data.website;
 		currencyCode = data.currencyCode.code;
 		preferredDateformat = data.preferredDateFormat;
 		timeZone = data.timeZone;
 		preferredCountryCode = data.preferredCountryCode;
 		preferredCountries = [data.preferredCountries];
+		dataFetched = true;
 	  } catch (error) {
 		console.error("Error fetching data:", error);
 	  }
@@ -241,7 +243,7 @@
 
   </script>
 
-
+{#if dataFetched}
   <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
@@ -279,15 +281,16 @@
 				</option>
 			  {/each}
 			</select>
-			
 		  </div>
 		</div>
 		<div class="w-2/3 pl-1">
 		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		
 			<TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
 		  </div>
 		</div>
 	  </div>
+	  
 	  
 
 	  
@@ -340,10 +343,10 @@
 		  update profile
 		</button>
 	  </div>
-
+	 
   </form>
 </main>
-
+{/if}
 
   
   <style>
