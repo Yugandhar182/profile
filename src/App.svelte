@@ -56,7 +56,7 @@
 		console.log(phone);
 		website = data.website;
 		currencyCode = data.currencyCode.code;
-		preferredDateformat = data.preferredDateFormat;
+		preferredDateformat = data.preferredDateFormat; 
 		timeZone = data.timeZone;
 		preferredCountryCode = data.preferredCountryCode;
 		preferredCountries = [data.preferredCountries];
@@ -311,18 +311,16 @@
 	
 	  </div>
 	  
-	  <div class="mb-6">
-		<label for="preferredDateFormat" class="block text-sm font-medium text-gray-700 dark:text-white">Preferred Date Format</label>
-		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-		  <select id="preferredDateFormat" bind:value={	preferredDateformat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
-			<option  selected >Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
-			<option >Date only (e.g., 12/31/2020)</option>
-			<option >Date and Time (e.g., 12/31/2020 15:00:00)</option>
-			<option >Date and Time (e.g., 12/31/2020 03:00PM)</option>
-		  </select>
-		</div>
-		
+	  <label for="preferredDateFormat" class="block text-sm font-medium text-gray-700 dark:text-white">Preferred Date Format</label>
+	  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		<select id="preferredDateFormat" bind:value={preferredDateformat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+		  <option value="default" >Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
+		  <option >Date only (e.g., 12/31/2020)</option>
+		  <option >Date and Time (e.g., 12/31/2020 15:00:00)</option>
+		  <option >Date and Time (e.g., 12/31/2020 03:00PM)</option>
+		</select>
 	  </div>
+	  
 	
 	  
 	  
