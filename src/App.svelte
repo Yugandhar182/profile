@@ -4,6 +4,8 @@
 	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
 	import { onMount } from 'svelte';	
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
+	
+
 
 		let id = "";
 		let name = "";
@@ -30,6 +32,7 @@
 		let imageUrl = null;
 		let isValid = false;
 		let dataFetched = false;
+	
 		 
 
 		
@@ -197,6 +200,10 @@
 		const data = await response.json();
 		// Access the imageUrl from the appLogo object
 		imageUrl = data.logo.url;
+		
+	
+
+    fetchImage();
 	  } catch (error) {
 		console.error("Error fetching image:", error);
 	  }
@@ -212,30 +219,32 @@
 	}
   
 	// Function to handle image upload
+	
 	async function uploadImage(event) {
-	  const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
-	  const uploadUrl = `https://api.recruitly.io/api/image/upload?apiKey=${apiKey}`;
-	  const formData = new FormData();
-	  formData.append("file", event.target.files[0]);
-	  formData.append("profilePic", "true");
-	  formData.append("type", "TENANT");
+    const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
+    const uploadUrl = `https://api.recruitly.io/api/image/upload?apiKey=${apiKey}`;
+    const formData = new FormData();
+    formData.append("file", event.target.files[0]);
+    formData.append("profilePic", "true");
+    formData.append("type", "TENANT");
+
+    try {
+      const response = await fetch(uploadUrl, {
+        method: "POST",
+        headers: {
+          Cookie: "SESSION=NDU1ZDRjNmUtNDg1ZC00NjVhLWJhNmItN2NlZmE4NzYxMWRm",
+        },
+        body: formData,
+      });
+      const data = await response.json();
+      // The uploaded image URL should be available in 'data.url'
+      imageUrl = data.logo.url;
   
-	  try {
-		const response = await fetch(uploadUrl, {
-		  method: "POST",
-		  headers: {
-			Cookie: "SESSION=NDU1ZDRjNmUtNDg1ZC00NjVhLWJhNmItN2NlZmE4NzYxMWRm",
-		  },
-		  body: formData,
-		});
-		const data = await response.json();
-		// The uploaded image URL should be available in 'data.url'
-		imageUrl = data.url;
-	  } catch (error) {
-		console.error("Error uploading image:", error);
-	  }
-	}
-  
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  }
+
 	// Call the fetchImage function to retrieve the image URL when the component is mounted
 	fetchImage();
 
@@ -253,11 +262,10 @@
 	  </div>
 	</div>
 	<div class="mb-6">
-	  <Label for="company_logo" class="mb-2">Company Logo</Label>
-	  <img src="{imageUrl}" alt="Logo" on:click={handleLogoClick} style="cursor: pointer;" />
-	
+		<Label for="company_logo" class="mb-2">Company Logo</Label>
+		<img id="uploadedImage" src="{imageUrl}" alt="Logo" on:click={handleLogoClick} style="cursor: pointer;" />
+		
 	</div>
-	
 	<div class="mb-6">
 		<Label for="company_name" class="mb-2">Company Name</Label>
 		<Input type="text" id="name" bind:value={name} required />
