@@ -258,9 +258,8 @@
     const inputElement = document.getElementById("phone-input");
     const intlTelInputInstance = intlTelInput(inputElement, {
       initialCountry: selectedCountry,
-      utilsScript: "intl-tel-input/build/js/utils.js",
+      utilsScript: "/path/to/utils.js", // Update this path with the correct location of utils.js
     });
-
     // Listen for changes to update the selectedCountry and phone
     inputElement.addEventListener("countrychange", () => {
       selectedCountry = inputElement.getAttribute("data-country-code");
