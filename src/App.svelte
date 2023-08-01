@@ -59,7 +59,8 @@
       latitude: data.address.latitude,
       longitude: data.address.longitude,
     };
-	    selectedCountry = data.address.countryCode; 
+	console.log(address.cityName);
+	selectedCountry = data.address.countryCode;
 		phone = data.phone;
 		console.log(phone);
 		website = data.website;
@@ -253,29 +254,34 @@
 	// Call the fetchImage function to retrieve the image URL when the component is mounted
 	fetchImage();
 
-
-	afterUpdate(() => {
+	async function onCountryChange(event) {
+    selectedCountry = event.detail.countryCode;
+    phone = event.detail.value; // Get the formatted number with dial code
+    // Remove the dial code from the phone number
     const inputElement = document.getElementById("phone-input");
-    const intlTelInputInstance = intlTelInput(inputElement, {
-      initialCountry: selectedCountry,
-      utilsScript: "/path/to/utils.js", // Update this path with the correct location of utils.js
-    });
-    // Listen for changes to update the selectedCountry and phone
-    inputElement.addEventListener("countrychange", () => {
-      selectedCountry = inputElement.getAttribute("data-country-code");
-      phone = intlTelInputInstance.getNumber(); // Get the formatted number with dial code
+    inputElement.value = phone;
+  }
 
-      // Remove the dial code from the phone number
-      if (phone) {
-        const dialCode = intlTelInputInstance.getSelectedCountryData().dialCode;
-        phone = phone.replace(`+${dialCode}`, "").trim();
-      }
-    });
+  onMount(async () => {
+  await fetchData();
+
+  const inputElement = document.getElementById("phone-input");
+  intlTelInput(inputElement, {
+    initialCountry: selectedCountry,
+    separateDialCode: true,
   });
+
+  // Listen for changes to update the selectedCountry and phone
+  inputElement.addEventListener("countrychange", () => {
+    selectedCountry = inputElement.getAttribute("data-country-code");
+    phone = inputElement.value;
+  });
+});
+
 
   </script>
 
-
+{#if dataFetched}
   <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
@@ -296,22 +302,25 @@
 	  </div>
 	  <div class="mb-6">
 		<Label for="address" class="mb-2">Address</Label>
-		<Input type="text" id="address"  bind:value={address.cityName} required />
-		
-	  </div>
+		<Input type="text" id="address" bind:value={address.cityName} required />
+   </div>
 	
-	  <div class="mb-6">
-		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white">Phone</label>
-		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-		 <input
-			type="tel"
-			id="phone-input"
-			bind:value={phone}
-			class="form-input {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
-			placeholder="Phone"
-		  />
+	  
+	
+	  <div class="mb-6 flex flex-wrap">
+		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
+	</div>
+		<div class="mb-6">
+		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+			<input
+			  id="phone-input"
+			  type="tel"
+			  bind:value={phone}
+			  class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
+			/>
+		  </div>
 		</div>
-	  </div>
+	
 
 	  
 	  <div class="mb-6">
@@ -364,7 +373,7 @@
 	 
   </form>
 </main>
-
+{/if}
 
   
   <style>
