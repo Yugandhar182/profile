@@ -1,9 +1,13 @@
+
 <script>
 	import { Input, Label } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
 	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
 	import { onMount } from 'svelte';	
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
+	import "intl-tel-input/build/css/intlTelInput.css";
+	import intlTelInput from "intl-tel-input";
+	import { afterUpdate } from "svelte";
 	
 
 
@@ -32,6 +36,7 @@
 		let imageUrl = null;
 		let isValid = false;
 		let dataFetched = false;
+		let countryFlags = [];
 	
 		 
 
@@ -249,10 +254,29 @@
 	fetchImage();
 
 
+	afterUpdate(() => {
+    const inputElement = document.getElementById("phone-input");
+    const intlTelInputInstance = intlTelInput(inputElement, {
+      initialCountry: selectedCountry,
+      utilsScript: "intl-tel-input/build/js/utils.js",
+    });
+
+    // Listen for changes to update the selectedCountry and phone
+    inputElement.addEventListener("countrychange", () => {
+      selectedCountry = inputElement.getAttribute("data-country-code");
+      phone = intlTelInputInstance.getNumber(); // Get the formatted number with dial code
+
+      // Remove the dial code from the phone number
+      if (phone) {
+        const dialCode = intlTelInputInstance.getSelectedCountryData().dialCode;
+        phone = phone.replace(`+${dialCode}`, "").trim();
+      }
+    });
+  });
 
   </script>
 
-{#if dataFetched}
+
   <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
@@ -277,29 +301,18 @@
 		
 	  </div>
 	
-	  <div class="mb-6 flex flex-wrap">
-		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
-		<div class="w-1/3 pr-1">
-		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-			<select class="country-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" aria-label="Default select example" name="Country" bind:value={selectedCountry}>
-			  <option value={null} hidden={selectedCountry !== null}>Please select</option>
-			  {#each normalizedCountries as country (country.id)}
-				<option value={country.iso2} selected={country.iso2 === selectedCountry} aria-selected={country.iso2 === selectedCountry}>
-				  {country.iso2} (+{country.dialCode})
-				</option>
-			  {/each}
-			</select>
-		  </div>
-		</div>
-		<div class="w-2/3 pl-1">
-		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-		
-			<TelInput country={selectedCountry} bind:value={phone} class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" />
-		  </div>
+	  <div class="mb-6">
+		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white">Phone</label>
+		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		 <input
+			type="tel"
+			id="phone-input"
+			bind:value={phone}
+			class="form-input {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
+			placeholder="Phone"
+		  />
 		</div>
 	  </div>
-	  
-	  
 
 	  
 	  <div class="mb-6">
@@ -352,7 +365,7 @@
 	 
   </form>
 </main>
-{/if}
+
 
   
   <style>
@@ -368,4 +381,5 @@
 	
 	 
 	}
+	
   </style>
