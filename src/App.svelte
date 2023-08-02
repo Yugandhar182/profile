@@ -307,27 +307,24 @@
 	
 	  
 	
-	  <div class="mb-6 flex flex-wrap">
-		<label for="phone" class="block text-sm font-medium text-gray-700 dark:text-white w-full">Phone</label>
-	</div>
-		<div class="mb-6">
-		  <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-			<input
-			  id="phone-input"
-			  type="tel"
-			  bind:value={phone}
-			  class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
-			/>
-		  </div>
-		</div>
-	
+   <div class="mb-6">
+    <label for="phone" class='mb-2'>Phone</label>
+    <input
+        id="phone-input"
+        type="tel"
+        bind:value={phone}
+        class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
+        style="width:500px ;" />
+   </div>
 
+	
+	
 	  
 	  <div class="mb-6">
 		<Label for="website" class="mb-2">Website</Label>
 		<Input type="url" id="website" bind:value={website} required />
-		
-	  </div>
+		 </div>
+		 
 	  <div class="mb-6">
 		<label for="currency" class="block text-sm font-medium text-gray-700 dark:text-white">Currency:</label>
 		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
@@ -389,5 +386,11 @@
 	
 	 
 	}
+	.mb-6 {
+  /* ... other styles ... */
+  /* Remove or adjust the rounded border styles for the phone input */
+  /* Remove the 'rounded-lg' class or adjust as needed */
+   border-radius: 1.25rem; 
+}
 	
   </style>
