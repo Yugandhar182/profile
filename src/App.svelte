@@ -228,7 +228,7 @@ async function getDefaultPhone() {
     intlTelInput(inputElement, {
       initialCountry: "auto", // Automatically select the country based on the user's IP
       separateDialCode: false, // Show the dial code in the same input field
-	  utilsScript: "/intl-tel-input/build/js/utils.js?1690975972744"
+	  
     });
   }
 }
