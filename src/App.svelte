@@ -1,4 +1,3 @@
-
 <script>
 	import { Input, Label } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
@@ -32,7 +31,7 @@
 		let currencyOptions = [];
 	    let selectedTimezone;
         let reactiveTimezoneOptions = [];
-		let selectedCountry=null;
+		let countryCode=null;
 		let imageUrl = null;
 		let isValid = false;
 		let dataFetched = false;
@@ -60,7 +59,8 @@
       longitude: data.address.longitude,
     };
 	console.log(address.cityName);
-	selectedCountry = data.address.countryCode;
+	
+	console.log(address.countryCode);
 		phone = data.phone;
 		console.log(phone);
 		website = data.website;
@@ -145,7 +145,7 @@
 				preferredCountryCode = "";
 				preferredCountries = [];
 				selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
-				selectedCountry = null;
+				countryCode = null;
 				}
 
 
@@ -195,26 +195,22 @@
 			  	  console.log("Error fetching timezone data:", error);
 				 });
 
-
-
 				 async function fetchImage() {
-	  const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
-	  const apiUrl = `https://api.recruitly.io/api/business/profile?apiKey=${apiKey}`;
-  
-	  try {
-		const response = await fetch(apiUrl);
-		const data = await response.json();
-		// Access the imageUrl from the appLogo object
-		imageUrl = data.logo.url;
-		
-	
+  const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
+  const uniqueParam = Date.now(); // Generate a unique parameter using the current timestamp
+  const apiUrl = `https://api.recruitly.io/api/business/profile?apiKey=${apiKey}&timestamp=${uniqueParam}`;
 
-    fetchImage();
-	  } catch (error) {
-		console.error("Error fetching image:", error);
-	  }
-	}
-  
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    // Access the imageUrl from the appLogo object
+    imageUrl = data.logo.url;
+  } catch (error) {
+    console.error("Error fetching image:", error);
+  }
+}
+
+
 	// Function to handle the logo click and trigger image upload
 	function handleLogoClick() {
 	  const inputElement = document.createElement("input");
@@ -225,58 +221,66 @@
 	}
   
 	// Function to handle image upload
-	
 	async function uploadImage(event) {
-    const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
-    const uploadUrl = `https://api.recruitly.io/api/image/upload?apiKey=${apiKey}`;
-    const formData = new FormData();
-    formData.append("file", event.target.files[0]);
-    formData.append("profilePic", "true");
-    formData.append("type", "TENANT");
+  const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
+  const uploadUrl = `https://api.recruitly.io/api/image/upload?apiKey=${apiKey}`;
+  const formData = new FormData();
+  formData.append("file", event.target.files[0]);
+  formData.append("profilePic", "true");
+  formData.append("type", "TENANT");
 
-    try {
-      const response = await fetch(uploadUrl, {
-        method: "POST",
-        headers: {
-          Cookie: "SESSION=NDU1ZDRjNmUtNDg1ZC00NjVhLWJhNmItN2NlZmE4NzYxMWRm",
-        },
-        body: formData,
-      });
-      const data = await response.json();
-      // The uploaded image URL should be available in 'data.url'
-      imageUrl = data.logo.url;
-  
-    } catch (error) {
-      console.error("Error uploading image:", error);
-    }
+  try {
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        Cookie: "SESSION=NDU1ZDRjNmUtNDg1ZC00NjVhLWJhNmItN2NlZmE4NzYxMWRm",
+        "Cache-Control": "no-cache, no-store, must-revalidate", // Add the Cache-Control header
+      },
+      body: formData,
+    });
+    const data = await response.json();
+    // The uploaded image URL should be available in 'data.url'
+    imageUrl = data.logo.url;
+	
+  } catch (error) {
+    console.error("Error uploading image:", error);
   }
+}fetchImage();
 
-	// Call the fetchImage function to retrieve the image URL when the component is mounted
-	fetchImage();
+ 
+	
 
-	async function onCountryChange(event) {
-    selectedCountry = event.detail.countryCode;
-    phone = event.detail.value; // Get the formatted number with dial code
-    // Remove the dial code from the phone number
-    const inputElement = document.getElementById("phone-input");
+	
+async function onCountryChange(event) {
+  countryCode = event.detail.countryCode;
+  const inputElement = document.getElementById("phone-input");
+  if (!phone.startsWith(`+${countryCode}`)) {
+    // Update the phone variable with the formatted number along with the country code
+    phone = `+${countryCode}${inputElement.value}`;
     inputElement.value = phone;
   }
+}
 
-  onMount(async () => {
+
+
+onMount(async () => {
   await fetchData();
 
   const inputElement = document.getElementById("phone-input");
   intlTelInput(inputElement, {
-    initialCountry: selectedCountry,
-    separateDialCode: true,
+    initialCountry: countryCode,
+    separateDialCode: false, // Set this to false to include the country code in the phone number
   });
 
-  // Listen for changes to update the selectedCountry and phone
+  // Listen for changes to update the countryCode and phone
   inputElement.addEventListener("countrychange", () => {
-    selectedCountry = inputElement.getAttribute("data-country-code");
-    phone = inputElement.value;
+    countryCode = inputElement.getAttribute("data-country-code");
+    if (!phone.startsWith(`+${countryCode}`)) {
+    // Update the phone variable with the formatted number along with the country code
+    phone = `+${countryCode}${inputElement.value}`}
   });
 });
+
 
 
   </script>
@@ -306,17 +310,17 @@
    </div>
 	
 	  
-	
    <div class="mb-6">
-    <label for="phone" class='mb-2'>Phone</label>
-    <input
-        id="phone-input"
-        type="tel"
-        bind:value={phone}
-        class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
-        style="width:500px ;" />
-   </div>
-
+	<label for="phone" class='mb-2'>Phone</label>
+	<input
+	  id="phone-input"
+	  type="tel"
+	  bind:value={phone}
+	 
+	  class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
+	  style="width:500px ;" />
+  </div>
+  
 	
 	
 	  
@@ -387,9 +391,7 @@
 	 
 	}
 	.mb-6 {
-  /* ... other styles ... */
-  /* Remove or adjust the rounded border styles for the phone input */
-  /* Remove the 'rounded-lg' class or adjust as needed */
+ 
    border-radius: 1.25rem; 
 }
 	
