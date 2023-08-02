@@ -23,7 +23,7 @@
 	   };
 	   let phone='';
 		let website = "";
-		let currencyCode = "";
+		let currencyCode = "gb";
 		let preferredDateformat = "";
 		let timeZone = "";
 		let preferredCountryCode = "";
@@ -70,6 +70,7 @@
 		preferredCountryCode = data.preferredCountryCode;
 		preferredCountries = [data.preferredCountries];
 		dataFetched = true;
+		return phone ;
 	  } catch (error) {
 		console.error("Error fetching data:", error);
 	  }
@@ -218,40 +219,17 @@ onMount(async () => {
   }
 }fetchImage();
 
- 
-	
-
-	
-async function onCountryChange(event) {
-  countryCode = event.detail.countryCode;
-  const inputElement = document.getElementById("phone-input");
-  if (!phone.startsWith(`+${countryCode}`)) {
-    // Update the phone variable with the formatted number along with the country code
-    phone = `+${countryCode}${inputElement.value}`;
-    inputElement.value = phone;
-  }
-}
-
-
-
-onMount(async () => {
-  await fetchData();
-
-  const inputElement = document.getElementById('phone-input');
-  intlTelInput(inputElement, {
-    initialCountry: countryCode,
-    separateDialCode: false, // Set this to false to include the country code in the phone number
-  });
-
-  // Listen for changes to update the countryCode and phone
-  inputElement.addEventListener('countrychange', () => {
-    countryCode = inputElement.getAttribute('data-country-code');
-    if (!phone.startsWith(`+${countryCode}`)) {
-      // Update the phone variable with the formatted number along with the country code
-      phone = `+${countryCode}${inputElement.value}`;
-    }
-  });
-});
+async function getDefaultPhone() {
+	  phone = await fetchData();
+	  // Initialize the intlTelInput plugin
+	  const inputElement = document.getElementById('phone');
+	  intlTelInput(inputElement, {
+		initialCountry: "auto", // Automatically select the country based on the user's IP
+		separateDialCode: false, // Show the dial code in a separate input field
+	  });
+	}
+  
+	getDefaultPhone();
 
 
   </script>
@@ -281,16 +259,13 @@ onMount(async () => {
    </div>
 	
 	  
-   <div class="mb-6">
-	<label for="phone" class='mb-2'>Phone</label>
-	<input
-	  id="phone-input"
-	  type="tel"
-	  bind:value={phone}
-	 
-	  class="form-select {!isValid && 'invalid'} block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"
-	  style="width:500px ;" />
+   <div>
+	
+	<div class="mb-6">
+	<label for="phone" class="mb-2" >Phone</label>
+	<input type="tel" id="phone" bind:value={phone}  class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px ;" required />
   </div>
+</div>
   
 	
 	
