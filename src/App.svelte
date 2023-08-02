@@ -26,7 +26,7 @@
 		let currencyCode = "gb";
 		let preferredDateformat = "";
 		let timeZone = "";
-		let preferredCountryCode = "";
+		let preferredCountryCode = "gb";
 		let preferredCountries = [];
 		let currencyOptions = [];
 	    let selectedTimezone;
@@ -81,6 +81,7 @@
 	  fetchData();
 	});
 	async function saveFormData() {
+		
   const Update = {
     id,
     name,
@@ -220,14 +221,18 @@ onMount(async () => {
 }fetchImage();
 
 async function getDefaultPhone() {
-	  phone = await fetchData();
-	  // Initialize the intlTelInput plugin
-	  const inputElement = document.getElementById('phone');
-	  intlTelInput(inputElement, {
-		initialCountry: "auto", // Automatically select the country based on the user's IP
-		separateDialCode: false, // Show the dial code in a separate input field
-	  });
-	}
+  phone = await fetchData();
+
+  // Initialize the intlTelInput plugin only if the phone number is not empty
+  if (phone.trim() !== '') {
+    const inputElement = document.getElementById('phone');
+    intlTelInput(inputElement, {
+      initialCountry: "auto", // Automatically select the country based on the user's IP
+      separateDialCode: false, // Show the dial code in the same input field
+    });
+  }
+}
+
   
 	getDefaultPhone();
 
@@ -263,7 +268,8 @@ async function getDefaultPhone() {
 	
 	<div class="mb-6">
 	<label for="phone" class="mb-2" >Phone</label>
-	<input type="tel" id="phone" bind:value={phone}  class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px ;" required />
+	<input type="tel" id="phone" bind:value={phone} inputmode="tel" class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px;" required />
+
   </div>
 </div>
   
