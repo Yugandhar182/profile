@@ -116,42 +116,13 @@
 		});
 		const updatedData = await response.json();
 		console.log("Updated data from API:", updatedData);
-		resetForm();
+		alert("Business Profile Updated succesfully");
 	  } catch (error) {
 		console.error("Error updating data:", error);
 	  }
 	}
 
-
-
-	function resetForm() {
-				
-				id = "";
-				name = "";
-				address = {
-					addressLine: "",
-					cityName: "",
-					regionName: "",
-					postCode: "",
-					countryCode: "IN",
-					latitude: "",
-					longitude: "",
-				};
-				phone = "";
-				website = "";
-				currencyCode = "";
-				preferredDateformat = "";
-				timeZone = "";
-				preferredCountryCode = "";
-				preferredCountries = [];
-				selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
-				countryCode = null;
-				}
-
-
-
-
-  onMount(async () => {
+onMount(async () => {
     try {
       const response = await fetch('https://api.recruitly.io/api/lookup/currency?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
       const responseData = await response.json();
@@ -266,21 +237,21 @@ async function onCountryChange(event) {
 onMount(async () => {
   await fetchData();
 
-  const inputElement = document.getElementById("phone-input");
+  const inputElement = document.getElementById('phone-input');
   intlTelInput(inputElement, {
     initialCountry: countryCode,
     separateDialCode: false, // Set this to false to include the country code in the phone number
   });
 
   // Listen for changes to update the countryCode and phone
-  inputElement.addEventListener("countrychange", () => {
-    countryCode = inputElement.getAttribute("data-country-code");
+  inputElement.addEventListener('countrychange', () => {
+    countryCode = inputElement.getAttribute('data-country-code');
     if (!phone.startsWith(`+${countryCode}`)) {
-    // Update the phone variable with the formatted number along with the country code
-    phone = `+${countryCode}${inputElement.value}`}
+      // Update the phone variable with the formatted number along with the country code
+      phone = `+${countryCode}${inputElement.value}`;
+    }
   });
 });
-
 
 
   </script>
