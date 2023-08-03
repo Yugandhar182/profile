@@ -356,25 +356,34 @@ async function getDefaultPhone() {
 	
 	  
 	  <div class="mb-6">
-        <label for="preferredCountryCode" class="block text-sm font-medium text-gray-700 dark:text-white">Default Country To Display</label>
-        <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-          <select id="preferredCountryCode" bind:value={mobilePreferences.preferredCountryCode} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
-            {#each countryOptions as country}
-              <option value={country.value}>{country.label}</option>
-            {/each}
-          </select>
-        </div>
-      </div>
+		<label for="preferredCountryCode" class="block text-sm font-medium text-gray-700 dark:text-white">Default Country To Display</label>
+		<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+		  <select id="preferredCountryCode" bind:value={mobilePreferences.preferredCountryCode} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+			{#each countryOptions as country}
+			  {#if mobilePreferences.preferredCountryCode === country.value}
+			
+				<option value={country.value} selected>{country.label}</option>
+			  {:else}
+				<option value={country.value}>{country.label}</option>
+			  {/if}
+			{/each}
+		  </select>
+		</div>
+	  </div>
 
 	  <div class="mb-6">
-		<Label  for="preferredCountries" class="mb-2">Preferred Countries To Display on Top</Label>
-		<MultiSelect bind:value={mobilePreferences.preferredCountries}  >
+		<Label for="preferredCountries" class="mb-2">Preferred Countries To Display on Top</Label>
+		<MultiSelect bind:value={mobilePreferences.preferredCountries}>
 		  {#each preferredCountriesOptions as country}
-			<option value={country.value}>{country.label}  </option>
+			{#if mobilePreferences.preferredCountries.includes(country.value)}
+			 <option value={country.value} selected>{country.label}</option>
+			{:else}
+			  <option value={country.value}>{country.label}</option>
+			{/if}
 		  {/each}
 		</MultiSelect>
 	  </div>
-	 
+	  
 
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
