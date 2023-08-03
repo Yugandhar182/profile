@@ -220,21 +220,21 @@ onMount(async () => {
 }fetchImage();
 
 async function getDefaultPhone() {
-	  phone = await fetchData();
-	  // Initialize the intlTelInput plugin
-	  const inputElement = document.getElementById('phone');
-	  intlTelInput(inputElement, {
-	
-	    DialCode:true, // Show the dial code in a separate input field
-		
-		initialCountry: address.countryCode,
-		utilsScript:'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.5.0/js/utils.js',
-	  });
-	}
+  phone = await fetchData();
+
+  // Initialize the intlTelInput plugin only if the phone number is not empty
+  if (phone.trim() !== '') {
+    const inputElement = document.getElementById('phone');
+    intlTelInput(inputElement, {
+      initialCountry: "auto", // Automatically select the country based on the user's IP
+      separateDialCode: false, // Show the dial code in the same input field
+	  
+    });
+  }
+}
+
   
 	getDefaultPhone();
-  
-	
 
 
   </script>
