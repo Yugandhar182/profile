@@ -403,7 +403,7 @@ async function getDefaultPhone() {
 	  margin-left: 550px;
 	  width: 500px;
 	 height: 200PX;
-	  margin-top:-310px;
+	  margin-top:-309px;
 	}
 	.container{
 	 
