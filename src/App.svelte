@@ -225,8 +225,9 @@ async function getDefaultPhone() {
 	  const inputElement = document.getElementById('phone');
 	  intlTelInput(inputElement, {
 	
-		separateDialCode:false, // Show the dial code in a separate input field
-		hiddenInput: "full_phone",
+	    DialCode:true, // Show the dial code in a separate input field
+		
+		initialCountry: address.countryCode,
 		utilsScript:'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.5.0/js/utils.js',
 	  });
 	}
