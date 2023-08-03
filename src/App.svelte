@@ -1,5 +1,5 @@
 <script>
-	import { Input, Label } from 'flowbite-svelte';
+	import { Input, Label} from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
 	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
 	import { onMount } from 'svelte';	
@@ -7,6 +7,11 @@
 	import "intl-tel-input/build/css/intlTelInput.css";
 	import intlTelInput from "intl-tel-input";
 	import { afterUpdate } from "svelte";
+	import { MultiSelect } from 'flowbite-svelte';
+
+ 
+
+
 	
 
 
@@ -26,9 +31,12 @@
 		let currencyCode = "gb";
 		let preferredDateformat = "";
 		let timeZone = "";
-		let preferredCountryCode = "gb";
-		let preferredCountries = [];
+		let mobilePreferences = {
+    preferredCountryCode: "",
+    preferredCountries: "",
+  };
 		let currencyOptions = [];
+		
 	    let selectedTimezone;
         let reactiveTimezoneOptions = [];
 		let countryCode=null;
@@ -36,6 +44,9 @@
 		let isValid = false;
 		let dataFetched = false;
 		let countryFlags = [];
+		let countryOptions = '';
+		let preferredCountriesOptions=[];
+	
 	
 		 
 
@@ -67,8 +78,14 @@
 		currencyCode = data.currencyCode.code;
 		preferredDateformat = data.preferredDateFormat; 
 		timeZone = data.timeZone;
-		preferredCountryCode = data.preferredCountryCode;
-		preferredCountries = [data.preferredCountries];
+		mobilePreferences = {
+    preferredCountryCode: data.mobilePreferences.preferredCountryCode,
+    preferredCountries: data.mobilePreferences.preferredCountries.split(","), // Split the country codes into an array
+  };
+
+            console.log(mobilePreferences.preferredCountryCode);
+            console.log(mobilePreferences.preferredCountries);
+        
 		dataFetched = true;
 		return phone ;
 	  } catch (error) {
@@ -100,8 +117,12 @@
     },
     preferredDateformat,
     timeZone,
-    preferredCountries: preferredCountries,
-    preferredCountryCode,
+	mobilePreferences : {
+            preferredCountryCode: mobilePreferences.preferredCountryCode,
+            preferredCountries: mobilePreferences.preferredCountries,
+        },
+  
+  
   };
 
   console.log("Update data:", JSON.stringify(Update));
@@ -123,49 +144,56 @@
 	  }
 	}
 
-onMount(async () => {
-    try {
-      const response = await fetch('https://api.recruitly.io/api/lookup/currency?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
-      const responseData = await response.json();
 
- 
 
-      if (Array.isArray(responseData.data)) {
-        // Map the response data to the format required for options
-        currencyOptions = responseData.data.map((currency) => ({
-          value: currency.code,
-          label: currency.name,
-        }));
-      } else {
-        console.error('Invalid currency data format:', responseData);
-      }
-    } catch (error) {
-      console.error('Error fetching currency options:', error);
+	onMount(async () => {
+  try {
+    const currencyResponse = await fetch('https://api.recruitly.io/api/lookup/currency?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
+    const currencyData = await currencyResponse.json();
+
+    if (Array.isArray(currencyData.data)) {
+      currencyOptions = currencyData.data.map((currency) => ({
+        value: currency.code,
+        label: currency.name,
+      }));
+	
+    } else {
+      console.error('Invalid currency data format:', currencyData);
     }
-  });
 
+    const timezoneResponse = await fetch('https://api.recruitly.io/api/lookup/timezone?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
+    const timezoneData = await timezoneResponse.json();
 
-				fetch("https://api.recruitly.io/api/lookup/timezone?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA")
-				  .then(response => {
-				    if (!response.ok) {
-				      throw new Error("Failed to fetch timezone data");
-				       }
-				   return response.json();
-				  })
-				   .then(responseData => {
-				      console.log("API response:", responseData);
-				       if (!Array.isArray(responseData.data)) {
-				       throw new Error("Invalid timezone data");
-				      }
-				    reactiveTimezoneOptions = responseData.data.map((timezone, index) => ({
-				    ...timezone,
-				      id: index + 1,
-				      }));
-				     selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
-				     })
-				    .catch(error => {
-			  	  console.log("Error fetching timezone data:", error);
-				 });
+    if (Array.isArray(timezoneData.data)) {
+      reactiveTimezoneOptions = timezoneData.data.map((timezone, index) => ({
+        ...timezone,
+        id: index + 1,
+      }));
+      selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
+    } else {
+      console.error('Invalid timezone data format:', timezoneData);
+    }
+
+    const countriesResponse = await fetch('https://api.recruitly.io/api/lookup/countries?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77');
+    const countriesData = await countriesResponse.json();
+
+    if (Array.isArray(countriesData.data)) {
+      countryOptions = countriesData.data.map((country) => ({
+        value: country.code,
+        label: country.name,
+      }));
+	  preferredCountriesOptions = countriesData.data.map((country) => ({
+        value: country.code,
+        label: country.name,
+      }));
+     
+    } else {
+      console.error('Invalid country data format:', countriesData);
+    }
+  } catch (error) {
+    console.error('Error fetching options:', error);
+  }
+});
 
 				 async function fetchImage() {
   const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
@@ -177,6 +205,8 @@ onMount(async () => {
     const data = await response.json();
     // Access the imageUrl from the appLogo object
     imageUrl = data.logo.url;
+	
+	
   } catch (error) {
     console.error("Error fetching image:", error);
   }
@@ -220,26 +250,28 @@ onMount(async () => {
 }fetchImage();
 
 async function getDefaultPhone() {
-  phone = await fetchData();
-
-  // Initialize the intlTelInput plugin only if the phone number is not empty
-  if (phone.trim() !== '') {
-    const inputElement = document.getElementById('phone');
-    intlTelInput(inputElement, {
-      initialCountry: "auto", // Automatically select the country based on the user's IP
-      separateDialCode: false, // Show the dial code in the same input field
-	  
-    });
-  }
-}
-
+	  phone = await fetchData();
+	  // Initialize the intlTelInput plugin
+	  const inputElement = document.getElementById('phone');
+	  intlTelInput(inputElement, {
+	
+	    DialCode:true, // Show the dial code in a separate input field
+		
+		
+	  });
+	}
   
 	getDefaultPhone();
+  
+	
 
+
+
+	
 
   </script>
 
-{#if dataFetched}
+
   <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
@@ -304,6 +336,9 @@ async function getDefaultPhone() {
 	  </div>
 	  
 	
+
+	
+	  
 	  
 	  
 	  <div class="mb-6">
@@ -317,7 +352,30 @@ async function getDefaultPhone() {
 		  </div>
 	
 	  </div>
+
+	
 	  
+	  <div class="mb-6">
+        <label for="preferredCountryCode" class="block text-sm font-medium text-gray-700 dark:text-white">Default Country To Display</label>
+        <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+          <select id="preferredCountryCode" bind:value={mobilePreferences.preferredCountryCode} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+            {#each countryOptions as country}
+              <option value={country.value}>{country.label}</option>
+            {/each}
+          </select>
+        </div>
+      </div>
+
+	  <div class="mb-6">
+		<Label  for="preferredCountries" class="mb-2">Preferred Countries To Display on Top</Label>
+		<MultiSelect bind:value={mobilePreferences.preferredCountries}  >
+		  {#each preferredCountriesOptions as country}
+			<option value={country.value}>{country.label}  </option>
+		  {/each}
+		</MultiSelect>
+	  </div>
+	 
+
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 		  update profile
@@ -326,7 +384,9 @@ async function getDefaultPhone() {
 	 
   </form>
 </main>
-{/if}
+
+
+  
 
   
   <style>
