@@ -335,7 +335,7 @@ const fetchCountryData = async () => {
 
   </script>
 
-<main class="container">
+
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
 	  <div>
@@ -443,7 +443,7 @@ const fetchCountryData = async () => {
 	  </div>
 	 
   </form>
-</main>
+
 
 
   
@@ -453,12 +453,14 @@ const fetchCountryData = async () => {
 	.form-container {
 	  margin-left: 550px;
 	  width: 500px;
-	 height: 200PX;
-	  margin-top:-310px;
+	 height: 1500PX;
+	  margin-bottom:-850px;
+	  background-color: aqua;
 	}
 	.container{
-	 
+	 height: 500px;
 	  width:600px;
+	  background-color: rgb(79, 48, 158);
 	
 	 
 	}
