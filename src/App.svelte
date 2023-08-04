@@ -1,6 +1,3 @@
-
-
-
 <script>
 	import { Input, Label} from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
@@ -257,21 +254,16 @@
 }fetchImage();
 
 async function getDefaultPhone() {
-
-
-  phone = await fetchData();
-
-  // Initialize the intlTelInput plugin only if the phone number is not empty
-  if (phone.trim() !== '') {
-    const inputElement = document.getElementById('phone');
-    intlTelInput(inputElement, {
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js",
-	  
-    });
-  }
-}
-
-
+	  phone = await fetchData();
+	  // Initialize the intlTelInput plugin
+	  const inputElement = document.getElementById('phone');
+	  intlTelInput(inputElement, {
+	
+	    DialCode:true, // Show the dial code in a separate input field
+		
+		
+	  });
+	}
   
 	getDefaultPhone();
   
@@ -338,7 +330,7 @@ const fetchCountryData = async () => {
 
   </script>
 
-
+<main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
 	  <div>
@@ -425,10 +417,9 @@ const fetchCountryData = async () => {
     <Label for="country" class="mb-2">Default Country To Display</Label>
         <Select class="block w-full rounded-lg bg-white border border-gray-300 text-gray-700 focus:outline-none focus:border-indigo-500" bind:value={preferredCountryCode1} on:change={(event) => {
            preferredCountryCode1 = event.target.value.toUpperCase();}}>
-              
+             
                  {#each countryOptions as country1}
-               <option value={country1.value}>{country1.label}</option> 
-			   {/each}
+               <option value={country1.value}>{country1.label}</option> {/each}
 		</Select>
 	 </div>
 
@@ -446,23 +437,22 @@ const fetchCountryData = async () => {
 	  </div>
 	 
   </form>
-
+</main>
 
 
   
 
   
   <style>
-		.form-container {
+	.form-container {
 	  margin-left: 550px;
 	  width: 500px;
 	 height: 200PX;
 	  margin-top:-310px;
 	}
 	.container{
-	 height: 500px;
+	 
 	  width:600px;
-	  background-color: rgb(79, 48, 158);
 	
 	 
 	}
