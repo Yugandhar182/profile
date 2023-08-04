@@ -48,7 +48,7 @@
         let selectedCountry = null;
 		let iti;
 		let selected = ["IN","AF"];
-		let preferredCountries = [];
+		let preferredCountries = ["us", "gb"];
         let preferredCountries1 = [];
 	
 	
