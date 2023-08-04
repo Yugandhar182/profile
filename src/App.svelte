@@ -93,8 +93,6 @@
             console.log(mobilePreferences.preferredCountries);
         
 		dataFetched = true;
-		
-
 		const inputElement = document.querySelector('#phone-input');
 	  iti = intlTelInput(inputElement, {
 		// Add your options here, e.g., utilsScript: '/path/to/utils.js'
@@ -107,12 +105,13 @@
 		console.error("Error fetching data:", error);
 	  }
 	};
-
-
-   function handleInput() {
+	
+	
+	function handleInput() {
 	phone = iti.getNumber(intlTelInputUtils.numberFormat.E164);
 	}
   
+
 
 	// Fetch data on component mount
 	onMount(() => {
@@ -269,6 +268,7 @@
   }
 }fetchImage();
 
+
   
 	
 
@@ -355,21 +355,23 @@ const fetchCountryData = async () => {
 		<Label for="address" class="mb-2">Address</Label>
 		<Input type="text" id="address" bind:value={address.cityName} required />
    </div>
-	 <div>
-	 
-		<div>
 	
-			<div class="mb-6">
-			<label for="phone" class="mb-2" >Phone</label>
-			<input type="tel" id="phone-input" on:input={handleInput}  class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px;" />
-		
-		  </div>
-		</div>
-  
+	  
+   <div>
+	
+	<div class="mb-6">
+	<label for="phone" class="mb-2" >Phone</label>
+	<input type="tel" id="phone-input" on:input={handleInput}  class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px;" />
+
+  </div>
 </div>
-  <div class="mb-6">
+  
+	
+	
+	  
+	  <div class="mb-6">
 		<Label for="website" class="mb-2">Website</Label>
-		<Input type="url" id="website" bind:value={website}   required />
+		<Input type="url" id="website" bind:value={website} required />
 		 </div>
 		 
 	  <div class="mb-6">
