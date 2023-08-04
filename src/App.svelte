@@ -51,6 +51,7 @@
         let selectedLabels=[];
         let countries = [];
         let selectedCountry = null;
+		let iti;
 	
 	
 		 
@@ -92,12 +93,27 @@
             console.log(mobilePreferences.preferredCountries);
         
 		dataFetched = true;
-		return phone ;
+		
+
+		const inputElement = document.querySelector('#phone-input');
+	  iti = intlTelInput(inputElement, {
+		// Add your options here, e.g., utilsScript: '/path/to/utils.js'
+		utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js",
+	  });
+	  // Set the initial phone number value in the intlTelInput instance using E.164 format
+	  iti.setNumber(phone);
+		
 	  } catch (error) {
 		console.error("Error fetching data:", error);
 	  }
 	};
-	
+
+
+   function handleInput() {
+	  phone = iti.getNumber();
+	}
+  
+
 	// Fetch data on component mount
 	onMount(() => {
 	  fetchData();
@@ -253,22 +269,6 @@
   }
 }fetchImage();
 
-async function getDefaultPhone() {
-  phone = await fetchData();
-
-  // Initialize the intlTelInput plugin only if the phone number is not empty
-  if (phone.trim() !== '') {
-    const inputElement = document.getElementById('phone');
-    intlTelInput(inputElement, {
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js",
-	  
-    });
-  }
-}
-
-
-  
-	getDefaultPhone();
   
 	
 
@@ -355,23 +355,21 @@ const fetchCountryData = async () => {
 		<Label for="address" class="mb-2">Address</Label>
 		<Input type="text" id="address" bind:value={address.cityName} required />
    </div>
+	 <div>
+	 
+		<div>
 	
-	  
-   <div>
-	
-	<div class="mb-6">
-	<label for="phone" class="mb-2" >Phone</label>
-	<input type="tel" id="phone" bind:value={phone} inputmode="tel" class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px;" required />
-
-  </div>
-</div>
+			<div class="mb-6">
+			<label for="phone" class="mb-2" >Phone</label>
+			<input type="tel" id="phone-input" on:input={handleInput} />
+		
+		  </div>
+		</div>
   
-	
-	
-	  
-	  <div class="mb-6">
+</div>
+  <div class="mb-6">
 		<Label for="website" class="mb-2">Website</Label>
-		<Input type="url" id="website" bind:value={website} required />
+		<Input type="url" id="website" bind:value={website}   required />
 		 </div>
 		 
 	  <div class="mb-6">
