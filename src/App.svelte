@@ -226,8 +226,7 @@ async function getDefaultPhone() {
   if (phone.trim() !== '') {
     const inputElement = document.getElementById('phone');
     intlTelInput(inputElement, {
-      initialCountry: "auto", // Automatically select the country based on the user's IP
-      separateDialCode: false, // Show the dial code in the same input field
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js",
 	  
     });
   }
