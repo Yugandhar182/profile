@@ -1,3 +1,6 @@
+
+
+
 <script>
 	import { Input, Label} from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
@@ -450,12 +453,11 @@ const fetchCountryData = async () => {
 
   
   <style>
-	.form-container {
+		.form-container {
 	  margin-left: 550px;
 	  width: 500px;
-	 height: 1500PX;
-	  margin-bottom:-850px;
-	  background-color: aqua;
+	 height: 200PX;
+	  margin-top:-310px;
 	}
 	.container{
 	 height: 500px;
