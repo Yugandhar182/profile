@@ -110,7 +110,7 @@
 
 
    function handleInput() {
-	  phone = iti.getNumber();
+	phone = iti.getNumber(intlTelInputUtils.numberFormat.E164);
 	}
   
 
