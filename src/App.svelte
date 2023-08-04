@@ -1,5 +1,5 @@
 <script>
-	import { Input, Label} from 'flowbite-svelte';
+	import { Input, Label } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
 	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
 	import { onMount } from 'svelte';	
@@ -7,11 +7,6 @@
 	import "intl-tel-input/build/css/intlTelInput.css";
 	import intlTelInput from "intl-tel-input";
 	import { afterUpdate } from "svelte";
-	import { MultiSelect } from 'flowbite-svelte';
-
- 
-
-
 	
 
 
@@ -31,12 +26,9 @@
 		let currencyCode = "gb";
 		let preferredDateformat = "";
 		let timeZone = "";
-		let mobilePreferences = {
-          preferredCountryCode: "",
-          preferredCountries: "",
-         };
+		let preferredCountryCode = "gb";
+		let preferredCountries = [];
 		let currencyOptions = [];
-		
 	    let selectedTimezone;
         let reactiveTimezoneOptions = [];
 		let countryCode=null;
@@ -44,14 +36,6 @@
 		let isValid = false;
 		let dataFetched = false;
 		let countryFlags = [];
-		let countryOptions = '';
-		let preferredCountriesOptions=[];
-		let preferredCountryCode = [];
-        let preferredCountryCode1 = [];  
-        let selectedLabels=[];
-        let countries = [];
-        let selectedCountry = null;
-	
 	
 		 
 
@@ -83,14 +67,8 @@
 		currencyCode = data.currencyCode.code;
 		preferredDateformat = data.preferredDateFormat; 
 		timeZone = data.timeZone;
-		mobilePreferences = {
-    preferredCountryCode: data.mobilePreferences.preferredCountryCode,
-    preferredCountries: data.mobilePreferences.preferredCountries.split(","), // Split the country codes into an array
-  };
-
-            console.log(mobilePreferences.preferredCountryCode);
-            console.log(mobilePreferences.preferredCountries);
-        
+		preferredCountryCode = data.preferredCountryCode;
+		preferredCountries = [data.preferredCountries];
 		dataFetched = true;
 		return phone ;
 	  } catch (error) {
@@ -103,7 +81,6 @@
 	  fetchData();
 	});
 	async function saveFormData() {
-		  console.log(preferredCountryCode1, "preferedecountries...");
   const Update = {
     id,
     name,
@@ -123,10 +100,8 @@
     },
     preferredDateformat,
     timeZone,
-  preferredCountries:selectedLabels,
-  preferredCountryCode: preferredCountryCode1.toLowerCase(),
-  
-  
+    preferredCountries: preferredCountries,
+    preferredCountryCode,
   };
 
   console.log("Update data:", JSON.stringify(Update));
@@ -148,56 +123,49 @@
 	  }
 	}
 
+onMount(async () => {
+    try {
+      const response = await fetch('https://api.recruitly.io/api/lookup/currency?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
+      const responseData = await response.json();
 
+ 
 
-	onMount(async () => {
-  try {
-    const currencyResponse = await fetch('https://api.recruitly.io/api/lookup/currency?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
-    const currencyData = await currencyResponse.json();
-
-    if (Array.isArray(currencyData.data)) {
-      currencyOptions = currencyData.data.map((currency) => ({
-        value: currency.code,
-        label: currency.name,
-      }));
-	
-    } else {
-      console.error('Invalid currency data format:', currencyData);
+      if (Array.isArray(responseData.data)) {
+        // Map the response data to the format required for options
+        currencyOptions = responseData.data.map((currency) => ({
+          value: currency.code,
+          label: currency.name,
+        }));
+      } else {
+        console.error('Invalid currency data format:', responseData);
+      }
+    } catch (error) {
+      console.error('Error fetching currency options:', error);
     }
+  });
 
-    const timezoneResponse = await fetch('https://api.recruitly.io/api/lookup/timezone?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA');
-    const timezoneData = await timezoneResponse.json();
 
-    if (Array.isArray(timezoneData.data)) {
-      reactiveTimezoneOptions = timezoneData.data.map((timezone, index) => ({
-        ...timezone,
-        id: index + 1,
-      }));
-      selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
-    } else {
-      console.error('Invalid timezone data format:', timezoneData);
-    }
-
-    const countriesResponse = await fetch('https://api.recruitly.io/api/lookup/countries?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77');
-    const countriesData = await countriesResponse.json();
-
-    if (Array.isArray(countriesData.data)) {
-      countryOptions = countriesData.data.map((country) => ({
-        value: country.code,
-        label: country.name,
-      }));
-	  preferredCountriesOptions = countriesData.data.map((country) => ({
-        value: country.code,
-        label: country.name,
-      }));
-     
-    } else {
-      console.error('Invalid country data format:', countriesData);
-    }
-  } catch (error) {
-    console.error('Error fetching options:', error);
-  }
-});
+				fetch("https://api.recruitly.io/api/lookup/timezone?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA")
+				  .then(response => {
+				    if (!response.ok) {
+				      throw new Error("Failed to fetch timezone data");
+				       }
+				   return response.json();
+				  })
+				   .then(responseData => {
+				      console.log("API response:", responseData);
+				       if (!Array.isArray(responseData.data)) {
+				       throw new Error("Invalid timezone data");
+				      }
+				    reactiveTimezoneOptions = responseData.data.map((timezone, index) => ({
+				    ...timezone,
+				      id: index + 1,
+				      }));
+				     selectedTimezone = reactiveTimezoneOptions.length > 0 ? reactiveTimezoneOptions[0].code : null;
+				     })
+				    .catch(error => {
+			  	  console.log("Error fetching timezone data:", error);
+				 });
 
 				 async function fetchImage() {
   const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
@@ -209,8 +177,6 @@
     const data = await response.json();
     // Access the imageUrl from the appLogo object
     imageUrl = data.logo.url;
-	
-	
   } catch (error) {
     console.error("Error fetching image:", error);
   }
@@ -261,7 +227,8 @@ async function getDefaultPhone() {
 	
 	    DialCode:true, // Show the dial code in a separate input field
 		
-		
+		initialCountry: address.countryCode,
+		utilsScript:'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.5.0/js/utils.js',
 	  });
 	}
   
@@ -269,68 +236,11 @@ async function getDefaultPhone() {
   
 	
 
-const fetchCountryData = async () => {
-      try {
-      const response = await fetch(
-        "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83" 
-             );
-   const responseData = await response.json();
-     if (Array.isArray(responseData.data)) {
-          countryOptions = responseData.data.map((country) => ({
-              value: country.code,
-              label: country.name,
-              }));
-		console.log("Country API response:", responseData);
-		     } else {
-		console.error("Invalid country data format:", responseData);
-		    }
-		      } catch (error) {
-		         console.error("Error fetching country options:", error);
-
-				}
-          };
-
- 
-
-    async function fetchCountries() {
-   try {
-    const response = await fetch(
-               "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83"
-           );
-              const responseData = await response.json();
-                 if (Array.isArray(responseData.data)) {
-                  countries = responseData.data.map((country) => ({
-					value: country.code.toLowerCase(),
-                    label: country.name,
-               
-                   }));
-				   console.log("Country API response:", responseData);
-            } else {
-         console.error("Invalid API response format:", responseData);
-         }
-        } catch (error) {
-        console.error("Error fetching data:", error);
-         }
-        }
-
-
-
-		$: selected = countries.filter((country) => selectedLabels.includes(country.value));
-		console.log(selected,"selectedss");
-
-	
-
-    function handleSelection(event) {
-	 if (event && event.detail) {
-		if (Array.isArray(event.detail)) {
-			selectedLabels = event.detail.map((selectedCountry) => selectedCountry.value);
-			}}}
-
-	
 
   </script>
 
-<main class="container">
+{#if dataFetched}
+  <main class="container">
   <form class="form-container">
 	<div class="grid gap-6 mb-6 md:grid-cols-1">
 	  <div>
@@ -394,9 +304,6 @@ const fetchCountryData = async () => {
 	  </div>
 	  
 	
-
-	
-	  
 	  
 	  
 	  <div class="mb-6">
@@ -410,26 +317,7 @@ const fetchCountryData = async () => {
 		  </div>
 	
 	  </div>
-
-	
 	  
-	  <div class="mb-3">
-    <Label for="country" class="mb-2">Default Country To Display</Label>
-        <Select class="block w-full rounded-lg bg-white border border-gray-300 text-gray-700 focus:outline-none focus:border-indigo-500" bind:value={preferredCountryCode1} on:change={(event) => {
-           preferredCountryCode1 = event.target.value.toUpperCase();}}>
-             
-                 {#each countryOptions as country1}
-               <option value={country1.value}>{country1.label}</option> {/each}
-		</Select>
-	 </div>
-
-
-    <div class="mb-3">
-    <Label class="mb-2">Preferred Countries To Display on Top</Label>
-      <MultiSelect options={countries} selected={selected}  bind:selectedLabels on:change={handleSelection}/>
-  </div>
-	 
-
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 		  update profile
@@ -438,9 +326,7 @@ const fetchCountryData = async () => {
 	 
   </form>
 </main>
-
-
-  
+{/if}
 
   
   <style>
