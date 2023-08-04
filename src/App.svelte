@@ -10,12 +10,7 @@
 	import { MultiSelect } from 'flowbite-svelte';
 
  
-
-
-	
-
-
-		let id = "";
+        let id = "";
 		let name = "";
 		let address = {
 		addressLine: "",
@@ -26,7 +21,7 @@
 		latitude: "",
 		longitude: "",
 	   };
-	   let phone='';
+	    let phone='';
 		let website = "";
 		let currencyCode = "gb";
 		let preferredDateformat = "";
@@ -52,6 +47,9 @@
         let countries = [];
         let selectedCountry = null;
 		let iti;
+		let selected = ["IN","AF"];
+		let preferredCountries = [];
+        let preferredCountries1 = [];
 	
 	
 		 
@@ -67,32 +65,28 @@
 		id = data.id;
 		name = data.name;
 		address = {
-      addressLine: data.address.addressLine,
-      cityName: data.address.cityName,
-      regionName: data.address.regionName,
-      postCode: data.address.postCode,
-      countryCode: data.address.countryCode,
-      latitude: data.address.latitude,
-      longitude: data.address.longitude,
-    };
-	console.log(address.cityName);
-	
-	console.log(address.countryCode);
-		phone = data.phone;
+				addressLine: data.address.addressLine,
+				cityName: data.address.cityName,
+				regionName: data.address.regionName,
+				postCode: data.address.postCode,
+				countryCode: data.address.countryCode,
+				latitude: data.address.latitude,
+				longitude: data.address.longitude,
+                 };
+	    phone = data.phone;
 		console.log(phone);
 		website = data.website;
 		currencyCode = data.currencyCode.code;
 		preferredDateformat = data.preferredDateFormat; 
 		timeZone = data.timeZone;
-		mobilePreferences = {
-    preferredCountryCode: data.mobilePreferences.preferredCountryCode,
-    preferredCountries: data.mobilePreferences.preferredCountries.split(","), // Split the country codes into an array
-  };
+		preferredCountryCode = data.mobilePreferences.preferredCountryCode,
+        preferredCountries =data.mobilePreferences.preferredCountries;
+        console.log(preferredCountries);
+        preferredCountries1 = preferredCountries.toUpperCase();
+        preferredCountryCode1 = preferredCountryCode.toUpperCase();
+        console.log(preferredCountries1 );
+	    dataFetched = true;
 
-            console.log(mobilePreferences.preferredCountryCode);
-            console.log(mobilePreferences.preferredCountries);
-        
-		dataFetched = true;
 		const inputElement = document.querySelector('#phone-input');
 	  iti = intlTelInput(inputElement, {
 		// Add your options here, e.g., utilsScript: '/path/to/utils.js'
@@ -116,35 +110,38 @@
 	// Fetch data on component mount
 	onMount(() => {
 	  fetchData();
+	  fetchCountryData();
+      fetchCountries();
 	});
+
+
 	async function saveFormData() {
 		  console.log(preferredCountryCode1, "preferedecountries...");
-  const Update = {
-    id,
-    name,
-	address : {
-      addressLine: address.addressLine,
-      cityName: address.cityName,
-      regionName:address.regionName,
-      postCode:address.postCode,
-      countryCode:address.countryCode,
-      latitude:address.latitude,
-      longitude:address.longitude,
-    },
-    phone,
-    website,
-    currencyCode: {
-      code: currencyCode,
-    },
-    preferredDateformat,
-    timeZone,
-  preferredCountries:selectedLabels,
-  preferredCountryCode: preferredCountryCode1.toLowerCase(),
-  
-  
-  };
+         const Update = {
+					id,
+					name,
+					address : {
+						addressLine: address.addressLine,
+						cityName: address.cityName,
+						regionName:address.regionName,
+						postCode:address.postCode,
+						countryCode:address.countryCode,
+						latitude:address.latitude,
+						longitude:address.longitude,
+					},
+					phone,
+					website,
+					currencyCode: {
+					code: currencyCode,
+					},
+					preferredDateformat,
+					timeZone,
+					preferredCountries,
+					preferredCountryCode: preferredCountryCode1.toLowerCase(),
+				
+				};
 
-  console.log("Update data:", JSON.stringify(Update));
+      console.log("Update data:", JSON.stringify(Update));
 	  
 	  // Send the updated data to the API here
 	  try {
@@ -193,22 +190,7 @@
       console.error('Invalid timezone data format:', timezoneData);
     }
 
-    const countriesResponse = await fetch('https://api.recruitly.io/api/lookup/countries?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77');
-    const countriesData = await countriesResponse.json();
-
-    if (Array.isArray(countriesData.data)) {
-      countryOptions = countriesData.data.map((country) => ({
-        value: country.code,
-        label: country.name,
-      }));
-	  preferredCountriesOptions = countriesData.data.map((country) => ({
-        value: country.code,
-        label: country.name,
-      }));
-     
-    } else {
-      console.error('Invalid country data format:', countriesData);
-    }
+   
   } catch (error) {
     console.error('Error fetching options:', error);
   }
@@ -428,11 +410,15 @@ const fetchCountryData = async () => {
 	 </div>
 
 
-    <div class="mb-3">
-    <Label class="mb-2">Preferred Countries To Display on Top</Label>
-      <MultiSelect options={countries} selected={selected}  bind:selectedLabels on:change={handleSelection}/>
-  </div>
-	 
+	 <div class="mb-3">
+
+        <label class="mb-2">Preferred Countries To Display on Top</label>
+
+        <div class="multi-Select-dropdown">
+          <MultiSelect items={countries} value={selected}/>
+        </div>
+
+    </div>
 
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
