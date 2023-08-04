@@ -361,7 +361,7 @@ const fetchCountryData = async () => {
 	
 			<div class="mb-6">
 			<label for="phone" class="mb-2" >Phone</label>
-			<input type="tel" id="phone-input" on:input={handleInput} />
+			<input type="tel" id="phone-input" on:input={handleInput}  class="form-select  block w-full py-2.5 pl-3 pr-10 text-base border border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600" style="width:500px;" />
 		
 		  </div>
 		</div>
