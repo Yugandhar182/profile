@@ -254,6 +254,7 @@
 }fetchImage();
 
 async function getDefaultPhone() {
+<<<<<<< HEAD
 	  phone = await fetchData();
 	  // Initialize the intlTelInput plugin
 	  const inputElement = document.getElementById('phone');
@@ -264,6 +265,20 @@ async function getDefaultPhone() {
 		
 	  });
 	}
+=======
+  phone = await fetchData();
+
+  // Initialize the intlTelInput plugin only if the phone number is not empty
+  if (phone.trim() !== '') {
+    const inputElement = document.getElementById('phone');
+    intlTelInput(inputElement, {
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js",
+	  
+    });
+  }
+}
+
+>>>>>>> 45cf9daf6b7ffaa4c692ce5c05c816975c254153
   
 	getDefaultPhone();
   
