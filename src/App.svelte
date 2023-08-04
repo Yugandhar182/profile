@@ -254,18 +254,8 @@
 }fetchImage();
 
 async function getDefaultPhone() {
-<<<<<<< HEAD
-	  phone = await fetchData();
-	  // Initialize the intlTelInput plugin
-	  const inputElement = document.getElementById('phone');
-	  intlTelInput(inputElement, {
-	
-	    DialCode:true, // Show the dial code in a separate input field
-		
-		
-	  });
-	}
-=======
+
+
   phone = await fetchData();
 
   // Initialize the intlTelInput plugin only if the phone number is not empty
@@ -278,7 +268,7 @@ async function getDefaultPhone() {
   }
 }
 
->>>>>>> 45cf9daf6b7ffaa4c692ce5c05c816975c254153
+
   
 	getDefaultPhone();
   
