@@ -73,7 +73,7 @@
 				latitude: data.address.latitude,
 				longitude: data.address.longitude,
                  };
-	    phone = data.phone;
+	  
 		console.log(phone);
 		website = data.website;
 		currencyCode = data.currencyCode.code;
@@ -87,13 +87,6 @@
         console.log(preferredCountries1 );
 	    dataFetched = true;
 
-		const inputElement = document.querySelector('#phone-input');
-	  iti = intlTelInput(inputElement, {
-		// Add your options here, e.g., utilsScript: '/path/to/utils.js'
-		utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js",
-	  });
-	  // Set the initial phone number value in the intlTelInput instance using E.164 format
-	  iti.setNumber(phone);
 		
 	  } catch (error) {
 		console.error("Error fetching data:", error);
@@ -101,9 +94,7 @@
 	};
 	
 	
-	function handleInput() {
-	phone = iti.getNumber(intlTelInputUtils.numberFormat.E164);
-	}
+	
   
 
 
@@ -312,6 +303,44 @@ const fetchCountryData = async () => {
 			}}}
 
 	
+
+			onMount(async () => {
+	  // Fetch data from the API
+	  const response = await fetch('https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77');
+	  const data = await response.json();
+	  // Set the default phone number value from the API data
+	  phone = data.phone;
+	  console.log(phone);
+  
+	  const inputElement = document.querySelector('#phone-input');
+	  iti = intlTelInput(inputElement, {
+		utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@16.0.3/build/js/utils.js',
+		separateDialCode: true,
+	  });
+	  // Set the initial phone number value in the intlTelInput instance using E.164 format
+	  iti.setNumber(phone);
+  
+	  // Set the placeholder number type to "FIXED_LINE"
+	  iti.setPlaceholderNumberType('FIXED_LINE');
+  
+	  // Listen for the countrychange event
+	  inputElement.addEventListener('countrychange', handleCountryChange);
+  
+	  // Listen for the input event to handle manual phone number changes
+	  inputElement.addEventListener('input', handleInput);
+	});
+  
+	function handleCountryChange() {
+	  // Get the updated phone number with the new country code
+	  phone = iti.getNumber(intlTelInputUtils.numberFormat.E164);
+	}
+  
+	function handleInput() {
+	  // Update the phone number with the country code
+	  phone = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
+	}
+  
+
 
   </script>
 
