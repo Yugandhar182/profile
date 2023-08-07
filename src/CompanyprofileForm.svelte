@@ -268,39 +268,31 @@ const fetchCountryData = async () => {
 
  
 
-    async function fetchCountries() {
+ 
+		  async function fetchCountries() {
    try {
     const response = await fetch(
-               "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83"
-           );
-              const responseData = await response.json();
-                 if (Array.isArray(responseData.data)) {
-                  countries = responseData.data.map((country) => ({
-					value: country.code.toLowerCase(),
-                    label: country.name,
-               
-                   }));
-				   console.log("Country API response:", responseData);
-            } else {
-         console.error("Invalid API response format:", responseData);
-         }
-        } catch (error) {
-        console.error("Error fetching data:", error);
-         }
-        }
+       "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83" 
+       );
+   if (!response.ok) {
+      throw new Error("Network response was not ok");
+      }
+        const responseData = await response.json();
 
-
-
-		$: selected = countries.filter((country) => selectedLabels.includes(country.value));
-		console.log(selected,"selectedss");
-
-	
-
-    function handleSelection(event) {
-	 if (event && event.detail) {
-		if (Array.isArray(event.detail)) {
-			selectedLabels = event.detail.map((selectedCountry) => selectedCountry.value);
-			}}}
+     if (Array.isArray(responseData.data)) {
+       countries = responseData.data.map((country) => ({
+           value: country.code,
+           name: country.name
+         }));
+      console.log("Fetched countries:", countries);
+      } 
+	  else {
+       console.error("Invalid API response format:", responseData);
+      }
+   } catch (error) {
+  console.error("Error fetching countries:", error);
+}
+}
 
 	
 
