@@ -1,12 +1,13 @@
 <script>
-	import { Input, Label} from 'flowbite-svelte';
+
+    import { Input, Label, Select } from "flowbite-svelte";
 	import 'flowbite/dist/flowbite.css';
-	import { Select, Dropdown, DropdownItem, ChevronDown } from 'flowbite-svelte';
+
 	import { onMount } from 'svelte';	
-	import { TelInput, normalizedCountries } from 'svelte-tel-input';
+	
 	import "intl-tel-input/build/css/intlTelInput.css";
 	import intlTelInput from "intl-tel-input";
-	import { afterUpdate } from "svelte";
+	
 	import { MultiSelect } from 'flowbite-svelte';
 
  
@@ -48,8 +49,10 @@
     export  let selectedCountry = null;
 	export	let iti;
 	export	let selected = ["IN","AF"];
-	export	let preferredCountries = ["us", "gb"];
+	
     export  let preferredCountries1 = [];
+    export let selectedCodes = [];
+	export let preferredCountries = [];
 	
 	
 		 
@@ -80,7 +83,9 @@
 		preferredDateformat = data.preferredDateFormat; 
 		timeZone = data.timeZone;
 		preferredCountryCode = data.mobilePreferences.preferredCountryCode,
-        preferredCountries =data.mobilePreferences.preferredCountries;
+        preferredCountries = data.mobilePreferences.preferredCountries;
+        selectedLabels = preferredCountries.split(",");
+
         console.log(preferredCountries);
         preferredCountries1 = preferredCountries.toUpperCase();
         preferredCountryCode1 = preferredCountryCode.toUpperCase();
@@ -99,11 +104,14 @@
 
 
 	// Fetch data on component mount
-	onMount(() => {
-	  fetchData();
-	  fetchCountryData();
-      fetchCountries();
-	});
+          onMount(async () => {
+
+				await fetchData();
+				fetchCountries();
+				fetchImage();
+				fetchCountryData ();
+       });
+
 
 
 	async function saveFormData() {
@@ -127,7 +135,7 @@
 					},
 					preferredDateformat,
 					timeZone,
-					preferredCountries,
+					preferredCountries: selectedLabels,
 					preferredCountryCode: preferredCountryCode1.toLowerCase(),
 				
 				};
@@ -266,32 +274,71 @@ const fetchCountryData = async () => {
 				}
           };
 
- 
+
+		  onMount(() => {    //To fetch countrycode 
+	     fetchCountryData();
+       });
 
  
+
 		  async function fetchCountries() {
-   try {
-    const response = await fetch(
-       "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83" 
-       );
-   if (!response.ok) {
-      throw new Error("Network response was not ok");
-      }
-        const responseData = await response.json();
 
-     if (Array.isArray(responseData.data)) {
-       countries = responseData.data.map((country) => ({
-           value: country.code,
-           name: country.name
-         }));
-      console.log("Fetched countries:", countries);
-      } 
-	  else {
-       console.error("Invalid API response format:", responseData);
-      }
-   } catch (error) {
-  console.error("Error fetching countries:", error);
+try {
+
+	const response = await fetch(
+
+		"https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83"
+
+	);
+
+	const responseData = await response.json();
+
+
+
+	if (Array.isArray(responseData.data)) {
+
+		countries = responseData.data.map((country) => ({
+
+			name: country.name,
+
+			value: country.code.toLowerCase(),
+
+		}));
+
+		selectedCodes = countries
+
+			.filter((country) => selectedLabels.includes(country.value))
+
+			.map((selectedCountry) => selectedCountry.value);
+
+	} else {
+
+		console.error("Invalid API response format:", responseData);
+
+	}
+
+} catch (error) {
+
+	console.error("Error fetching data:", error);
+
 }
+
+}
+
+
+
+function handleSelection(event) {
+
+if (event && event.detail && event.detail.value) {
+
+	selectedCodes = event.detail.value.map((selectedCountry) =>
+
+		selectedCountry.value.toLowerCase()
+
+	);
+
+}
+
 }
 
 	
@@ -431,15 +478,16 @@ const fetchCountryData = async () => {
 	 </div>
 
 
+
 	 <div class="mb-3">
 
-        <label class="mb-2">Preferred Countries To Display on Top</label>
+		<Label class="mb-2">Preferred Countries To Display on Top</Label>
+     {#if countries.length > 0}
+      <MultiSelect items={countries} bind:value={selectedLabels} on:change={handleSelection} />
+    {/if}
 
-        <div class="multi-Select-dropdown">
-          <MultiSelect items={countries} value={selected}/>
-        </div>
+	</div>
 
-    </div>
 
 	  <div class="mb-6">
 		<button type="button" on:click={saveFormData} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
